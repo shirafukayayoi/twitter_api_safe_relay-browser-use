@@ -38,6 +38,7 @@ const clients = await Promise.all(
 			.with({ type: "browser-use" }, (e) => {
 				return launchBrowserUse({
 					headless: e.headless,
+					userDataDir: e.userDataDir,
 					viewport: e.viewport,
 				});
 			})

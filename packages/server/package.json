@@ -1,7 +1,7 @@
 {
 	"name": "twitter-api-safe-relay",
 	"version": "1.0.0",
-	"description": "HTTP relay server for safe Twitter/X web API requests through Playwright profiles.",
+	"description": "HTTP relay server for safe Twitter/X web API requests through Browser use profiles.",
 	"type": "module",
 	"main": "dist/index.js",
 	"types": "./src/index.ts",
@@ -46,15 +46,14 @@
 		"twitter",
 		"x",
 		"hono",
-		"playwright",
+		"browser-use",
 		"relay"
 	],
 	"author": "",
 	"license": "MIT",
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.1057.0",
 		"@hono/node-server": "^1.19.4",
-		"browser-use-typescript": "^1.0.15",
+		"browser-use": "^0.7.1",
 		"hono": "^4.11.0",
 		"pino": "^10.1.0",
 		"pino-pretty": "^13.1.3",

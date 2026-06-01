@@ -1,6 +1,6 @@
 # twitter-api-safe-relay
 
-HTTP relay server for safe Twitter/X web API requests through Playwright profiles.
+HTTP relay server for safe Twitter/X web API requests through Browser use-backed browser profiles.
 
 ```sh
 twitter-api-safe-relay

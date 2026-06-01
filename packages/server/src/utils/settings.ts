@@ -38,6 +38,7 @@ const BrowserUseSchema = z.strictObject({
 	type: z.literal("browser-use"),
 	headless: z.boolean().default(false),
 	viewport: ViewportSchema.optional(),
+	userDataDir: z.string().optional(),
 });
 
 const ProfileSchema = z.strictObject({

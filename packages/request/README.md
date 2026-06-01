@@ -1,15 +1,16 @@
 # twitter-api-safe-request
 
-Safe request helpers for Twitter/X web API access through a Playwright persistent profile.
+Safe request helpers for Twitter/X web API access through a browser page bridge.
 
 ```ts
 import { createTwitterBrowser } from "twitter-api-safe-request";
-import { chromium } from "playwright";
+import { launchBrowserUse } from "twitter-api-safe-relay";
 
-const context = await chromium.launchPersistentContext("./user_data/account1", {
+const browser = await launchBrowserUse({
+  userDataDir: "./user_data/account1",
   headless: false,
 });
-const page = await context.newPage();
+const page = await browser.newPage();
 const client = createTwitterBrowser(page);
 await client.inject();
 await client.goto("https://x.com/home");

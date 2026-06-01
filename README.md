@@ -1,8 +1,8 @@
 # twitter-api-safe-relay
 
-A TypeScript monorepo for calling the internal Twitter/X Web App API client from a logged-in browser opened with Playwright.
+A TypeScript monorepo for calling the internal Twitter/X Web App API client from a logged-in browser opened through Browser use.
 
-This is not just another Node.js HTTP client. It opens X.com in a real browser, hooks into the Web App's webpack runtime, captures the internal API client used by the page, and dispatches requests from Node.js through `page.evaluate()`.
+This is not just another Node.js HTTP client. It opens X.com in a real browser, hooks into the Web App's webpack runtime, captures the internal API client used by the page, and dispatches requests from Node.js through the browser page bridge.
 
 In other words, this project delegates requests to the logged-in browser context instead of reimplementing cookies, auth state, CSRF handling, Web App request behavior, feature flags, and other moving parts in Node.js.
 
@@ -44,10 +44,10 @@ See `docker/` for the Docker Compose setup.
 pnpm install
 ```
 
-Install Playwright browsers if needed.
+Install the Browser use-backed browser runtime if needed.
 
 ```sh
-pnpm exec playwright install
+pnpm --filter twitter-api-safe-relay exec playwright install chromium
 ```
 
 ## Tests
@@ -77,19 +77,20 @@ Configure the relay server port, log level, and browser profiles in the workspac
     {
       "name": "account1",
       "browser": {
-        "type": "cdp",
-        "browserType": "chromium",
-        "cdpEndpoint": "http://127.0.0.1:9222"
+        "type": "browser-use",
+        "userDataDir": "./../../user_data/account1",
+        "headless": false
       }
     }
   ]
 }
 ```
 
-Each profile's `browser` is one of two types:
+Each profile's `browser` supports these types:
 
-- `cdp` — connect to an already-running browser over the Chrome DevTools Protocol via `cdpEndpoint` (used by the Docker setup, which points at the kasmweb Chrome). Sign in to X/Twitter in that browser and keep the session.
-- `launch` — let Playwright launch a persistent context. Set `userDataDir` to the profile storage path; on first launch, sign in to X/Twitter in the browser and keep the session saved before using the relay.
+- `browser-use` — launch and drive the browser through Browser use. Set `userDataDir` to persist the signed-in X/Twitter profile.
+- `cdp` — legacy mode for connecting to an already-running browser over the Chrome DevTools Protocol via `cdpEndpoint`.
+- `launch` — legacy mode for launching a persistent browser context.
 
 ## `twitter-api-safe-request` example
 
@@ -102,14 +103,14 @@ pnpm add twitter-api-safe-request
 ```
 
 ```ts
-import { chromium } from "playwright";
 import { createTwitterBrowser } from "twitter-api-safe-request";
+import { launchBrowserUse } from "twitter-api-safe-relay";
 
-const context = await chromium.launchPersistentContext("./user_data/account1", {
+const browser = await launchBrowserUse({
+  userDataDir: "./user_data/account1",
   headless: false,
 });
-
-const page = await context.newPage();
+const page = await browser.newPage();
 const client = createTwitterBrowser(page);
 await client.inject();
 

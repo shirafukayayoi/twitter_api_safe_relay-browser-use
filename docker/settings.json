@@ -5,9 +5,9 @@
     {
       "name": "account1",
       "browser": {
-        "type": "cdp",
-        "browserType": "chromium",
-        "cdpEndpoint": "http://127.0.0.1:9222"
+        "type": "browser-use",
+        "userDataDir": "/profile",
+        "headless": false
       }
     }
   ]

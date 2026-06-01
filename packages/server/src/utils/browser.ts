@@ -1,4 +1,4 @@
-import { BrowserContext as BrowserUseContext } from "browser-use-typescript";
+import { BrowserProfile, BrowserSession } from "browser-use/browser";
 import { chromium, firefox, webkit } from "playwright";
 import type { BrowserPage } from "twitter-api-safe-request";
 
@@ -18,9 +18,10 @@ type CdpBrowserSettings = {
 	cdpEndpoint: string;
 };
 
-type BrowserUseSettings = {
-	headless: boolean | undefined;
-	viewport: { width: number; height: number } | undefined;
+export type BrowserUseSettings = {
+	headless?: boolean | undefined;
+	userDataDir?: string | undefined;
+	viewport?: { width: number; height: number } | undefined;
 };
 
 export type BrowserHandle = {
@@ -49,15 +50,23 @@ export const connectBrowser = async (settings: CdpBrowserSettings) => {
 };
 
 export const launchBrowserUse = async (settings: BrowserUseSettings): Promise<BrowserHandle> => {
-	const context = new BrowserUseContext();
-	if (settings.viewport) {
-		context.config.browser_window_size.width = settings.viewport.width;
-		context.config.browser_window_size.height = settings.viewport.height;
-	}
-	context.browser.config.headless = settings.headless ?? false;
+	const profile = new BrowserProfile({
+		headless: settings.headless ?? false,
+		user_data_dir: settings.userDataDir ?? null,
+		viewport: settings.viewport ?? null,
+		window_size: settings.viewport ?? null,
+	});
+	const session = new BrowserSession({ browser_profile: profile });
+	await session.start();
 
 	return {
-		newPage: async () => await context.get_current_page(),
-		close: async () => await context.close(),
+		newPage: async () => {
+			const page = await session.get_current_page();
+			if (!page) {
+				throw new Error("Browser use did not provide a current page");
+			}
+			return page;
+		},
+		close: async () => await session.close(),
 	};
 };
