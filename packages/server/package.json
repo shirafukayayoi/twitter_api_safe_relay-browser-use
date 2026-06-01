@@ -52,7 +52,9 @@
 	"author": "",
 	"license": "MIT",
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1057.0",
 		"@hono/node-server": "^1.19.4",
+		"browser-use-typescript": "^1.0.15",
 		"hono": "^4.11.0",
 		"pino": "^10.1.0",
 		"pino-pretty": "^13.1.3",

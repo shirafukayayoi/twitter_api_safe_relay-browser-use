@@ -34,10 +34,16 @@ const CdpBrowserSchema = z.strictObject({
 	cdpEndpoint: z.string().min(1, "CDP endpoint is required"),
 });
 
+const BrowserUseSchema = z.strictObject({
+	type: z.literal("browser-use"),
+	headless: z.boolean().default(false),
+	viewport: ViewportSchema.optional(),
+});
+
 const ProfileSchema = z.strictObject({
 	name: z.string().min(1, "Profile name is required"),
 	home: HomeSchema.default(HomeSchema.parse({})),
-	browser: z.discriminatedUnion("type", [LunchBrowserSchema, CdpBrowserSchema]),
+	browser: z.discriminatedUnion("type", [BrowserUseSchema, LunchBrowserSchema, CdpBrowserSchema]),
 });
 
 const SettingsSchema = z.strictObject({

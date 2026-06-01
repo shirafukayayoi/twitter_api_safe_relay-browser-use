@@ -3,7 +3,7 @@ import { serve } from "@hono/node-server";
 import { match } from "ts-pattern";
 import { createTwitterBrowser } from "twitter-api-safe-request";
 import createApp from "./app.js";
-import { connectBrowser, launchBrowser } from "./utils/browser.js";
+import { connectBrowser, launchBrowser, launchBrowserUse } from "./utils/browser.js";
 import { createLogger } from "./utils/logger.js";
 import { randomChoice } from "./utils/random.js";
 import { loadSettings } from "./utils/settings.js";
@@ -29,6 +29,12 @@ const browser = await Promise.all(
 				return connectBrowser({
 					browserType: e.browserType,
 					cdpEndpoint: e.cdpEndpoint,
+				});
+			})
+			.with({ type: "browser-use" }, (e) => {
+				return launchBrowserUse({
+					headless: e.headless,
+					viewport: e.viewport,
 				});
 			})
 			.exhaustive();

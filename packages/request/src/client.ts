@@ -1,6 +1,14 @@
 import fs from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import type { Page } from "playwright";
+
+export type BrowserPage = {
+	addInitScript: (script: string) => Promise<unknown>;
+	close?: () => Promise<unknown>;
+	evaluate: <T>(pageFunction: string | ((arg: T) => unknown), arg?: T) => Promise<unknown>;
+	exposeFunction: (name: string, callback: (...args: unknown[]) => unknown) => Promise<unknown>;
+	goto: (url: string) => Promise<unknown>;
+	url: () => string;
+};
 
 export type GraphQLRequest = {
 	queryId: string;
@@ -29,7 +37,7 @@ export type TwitterApiProfileClient = {
 	enableDebug: () => Promise<void>;
 	waitStartup: () => Promise<void>;
 	goto: (url: string) => Promise<void>;
-	page: Page;
+	page: BrowserPage;
 };
 
 declare global {
@@ -42,7 +50,7 @@ declare global {
 
 const defaultInjectSetupScriptPath = fileURLToPath(new URL("../injects/setup.js", import.meta.url));
 
-export const createTwitterBrowser = (page: Page): TwitterApiProfileClient => {
+export const createTwitterBrowser = (page: BrowserPage): TwitterApiProfileClient => {
 	const [debugStream, debugWriter] = (() => {
 		const stream = new TransformStream<unknown, unknown>();
 		return [stream.readable, stream.writable.getWriter()];
@@ -85,7 +93,9 @@ export const createTwitterBrowser = (page: Page): TwitterApiProfileClient => {
 		});
 	};
 
-	const waitStartup = async () => await page.evaluate(() => globalThis.elonmusk_114514_wait_startup.promise);
+	const waitStartup = async () => {
+		await page.evaluate(() => globalThis.elonmusk_114514_wait_startup.promise);
+	};
 
 	const goto = async (url: string) => {
 		await page.goto(url);
